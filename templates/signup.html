@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Sign up - Task Manager{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1>Create an account</h1>
+    <form method="POST" action="{{ url_for('signup') }}">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autofocus>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="6">
+
+        <label for="confirm_password">Confirm password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+
+        <button type="submit" class="btn btn-primary">Sign up</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+</div>
+{% endblock %}

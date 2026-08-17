@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Task Manager{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Your Projects</h1>
+    <button class="btn btn-primary" onclick="document.getElementById('new-project-form').classList.toggle('hidden')">
+        + New Project
+    </button>
+</div>
+
+<div id="new-project-form" class="card hidden">
+    <h2>Create a project</h2>
+    <form method="POST" action="{{ url_for('create_project') }}">
+        <label for="name">Project name</label>
+        <input type="text" id="name" name="name" required autofocus>
+
+        <label for="description">Description (optional)</label>
+        <textarea id="description" name="description" rows="2"></textarea>
+
+        <button type="submit" class="btn btn-primary">Create Project</button>
+    </form>
+</div>
+
+{% if projects %}
+<div class="project-grid">
+    {% for project in projects %}
+    {% set counts = project.task_counts() %}
+    <a class="project-card" href="{{ url_for('view_project', project_id=project.id) }}">
+        <h3>{{ project.name }}</h3>
+        {% if project.description %}
+            <p class="project-desc">{{ project.description }}</p>
+        {% endif %}
+        <div class="project-stats">
+            <span class="stat stat-todo">{{ counts.todo }} To Do</span>
+            <span class="stat stat-doing">{{ counts.doing }} Doing</span>
+            <span class="stat stat-done">{{ counts.done }} Done</span>
+        </div>
+        <div class="project-total">{{ project.total_tasks }} task{{ 's' if project.total_tasks != 1 else '' }} total</div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>You don't have any projects yet. Create your first one to get started.</p>
+</div>
+{% endif %}
+{% endblock %}
