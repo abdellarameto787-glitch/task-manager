@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Task Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <a class="brand" href="{{ url_for('dashboard') if current_user.is_authenticated else url_for('login') }}">
+            📋 Task Manager
+        </a>
+       <div class="navbar-nav ms-auto">
+    <span class="nav-item nav-link text-light me-3">
+        Hi, {{ current_user.username }}
+    </span>
+    <a class="nav-item nav-link btn btn-outline-light btn-sm px-3 me-2" href="{{ url_for('connect_telegram') }}">
+        🤖 Telegram
+    </a>
+    <a class="nav-item nav-link btn btn-outline-light btn-sm px-3" href="{{ url_for('logout') }}">
+        Log out
+    </a>
+</div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

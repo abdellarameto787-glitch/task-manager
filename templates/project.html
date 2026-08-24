@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ project.name }} - Task Manager{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ url_for('dashboard') }}">&larr; All projects</a>
+
+<div class="page-header">
+    <div>
+        <h1>{{ project.name }}</h1>
+        {% if project.description %}<p class="project-desc">{{ project.description }}</p>{% endif %}
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-secondary" onclick="document.getElementById('edit-project-form').classList.toggle('hidden')">
+            Edit Project
+        </button>
+        <form method="POST" action="{{ url_for('delete_project', project_id=project.id) }}"
+              onsubmit="return confirm('Delete this project and all its tasks? This cannot be undone.');">
+            <button type="submit" class="btn btn-danger">Delete Project</button>
+        </form>
+    </div>
+</div>
+
+<div id="edit-project-form" class="card hidden">
+    <h2>Edit project</h2>
+    <form method="POST" action="{{ url_for('edit_project', project_id=project.id) }}">
+        <label for="name">Project name</label>
+        <input type="text" id="name" name="name" value="{{ project.name }}" required>
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="2">{{ project.description or '' }}</textarea>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2>Add a task</h2>
+    <form method="POST" action="{{ url_for('create_task', project_id=project.id) }}" class="task-form-inline">
+        <input type="text" name="title" placeholder="Task title" required>
+        <input type="text" name="description" placeholder="Description (optional)">
+        <input type="date" name="due_date">
+        <button type="submit" class="btn btn-primary">Add Task</button>
+    </form>
+</div>
+
+<div class="board">
+    {% for status, label in [('todo', 'To Do'), ('doing', 'Doing'), ('done', 'Done')] %}
+    <div class="board-column">
+        <h3 class="column-title column-{{ status }}">{{ label }} ({{ tasks_by_status[status]|length }})</h3>
+
+        {% for task in tasks_by_status[status] %}
+        <div class="task-card {% if task.is_overdue %}task-overdue{% endif %}">
+            <div class="task-title">{{ task.title }}</div>
+            {% if task.description %}<div class="task-desc">{{ task.description }}</div>{% endif %}
+            {% if task.due_date %}
+                <div class="task-due {% if task.is_overdue %}overdue-text{% endif %}">
+                    Due {{ task.due_date.strftime('%b %d, %Y') }}{% if task.is_overdue %} · Overdue{% endif %}
+                </div>
+            {% endif %}
+
+            <div class="task-actions">
+                <form method="POST" action="{{ url_for('update_task_status', task_id=task.id) }}" class="status-form">
+                    <select name="status" onchange="this.form.submit()">
+                        <option value="todo" {% if task.status == 'todo' %}selected{% endif %}>To Do</option>
+                        <option value="doing" {% if task.status == 'doing' %}selected{% endif %}>Doing</option>
+                        <option value="done" {% if task.status == 'done' %}selected{% endif %}>Done</option>
+                    </select>
+                </form>
+                <button class="btn-link" onclick="document.getElementById('edit-task-{{ task.id }}').classList.toggle('hidden')">Edit</button>
+                <form method="POST" action="{{ url_for('delete_task', task_id=task.id) }}"
+                      onsubmit="return confirm('Delete this task?');">
+                    <button type="submit" class="btn-link btn-link-danger">Delete</button>
+                </form>
+            </div>
+
+            <div id="edit-task-{{ task.id }}" class="task-edit-form hidden">
+                <form method="POST" action="{{ url_for('edit_task', task_id=task.id) }}">
+                    <input type="text" name="title" value="{{ task.title }}" required>
+                    <input type="text" name="description" value="{{ task.description or '' }}" placeholder="Description">
+                    <input type="date" name="due_date" value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}">
+                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <p class="empty-column">No tasks here.</p>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
