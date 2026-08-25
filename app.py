@@ -368,7 +368,16 @@ def trigger_reminders():
     flash(f"Sent {count} reminder(s)!", "success")
     return redirect(url_for("dashboard"))
 
+# ---------- Cron Job Endpoint ----------
 
+@app.route("/cron/reminders")
+def cron_reminders():
+    """Public endpoint for Render Cron Jobs to trigger reminders"""
+    try:
+        count = send_due_task_reminders()
+        return f"✅ Sent {count} reminder(s)!"
+    except Exception as e:
+        return f"❌ Error: {str(e)}", 500
 # ---------- Entry point ----------
 
 with app.app_context():
