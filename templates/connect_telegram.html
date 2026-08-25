@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>🤖 Connect Telegram</h4>
+                </div>
+                <div class="card-body">
+                    {% if current_user.telegram_chat_id %}
+                        <div class="alert alert-success">
+                            ✅ Connected! Your Chat ID: <code>{{ current_user.telegram_chat_id }}</code>
+                        </div>
+                        <p>You will receive task reminders on Telegram.</p>
+                        <form method="POST">
+                            <button type="submit" class="btn btn-danger" 
+                                    onclick="return confirm('Remove Telegram connection?')"
+                                    name="remove" value="true">
+                                Disconnect
+                            </button>
+                        </form>
+                    {% else %}
+                        <p>Connect your Telegram account to receive task reminders.</p>
+                        
+                        <div class="alert alert-info">
+                            <h5>How to find your Chat ID:</h5>
+                            <ol>
+                                <li>Open Telegram and search for <strong>@userinfobot</strong></li>
+                                <li>Send <strong>/start</strong> to @userinfobot</li>
+                                <li>It will reply with your Chat ID (a number like 123456789)</li>
+                            </ol>
+                        </div>
+                        
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="chat_id">Your Telegram Chat ID:</label>
+                                <input type="text" class="form-control" id="chat_id" name="chat_id" 
+                                       placeholder="e.g., 123456789" required>
+                                <small class="form-text text-muted">
+                                    Get this by messaging @userinfobot
+                                </small>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Connect</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
