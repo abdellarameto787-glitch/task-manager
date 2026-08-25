@@ -15,7 +15,7 @@ from models import db, User, Project, Task
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///taskmanager.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///taskmanager_new.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
